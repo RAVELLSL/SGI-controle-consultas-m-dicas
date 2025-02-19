@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Controle de Consultas Médicas</title>
+  
+  <style>
+    /* ===========================
+       RESET & BASE
+       =========================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      font-family: Arial, sans-serif;
+      background: #f0f3f9;
+      color: #333;
+      line-height: 1.6;
+      /* Removendo margens padrão do body para aproveitar a tela */
+    }
+
+    /* ===========================
+       CONTAINER PRINCIPAL
+       =========================== */
+    .container {
+      /* Aumentando a largura para quase a tela toda
+         e removendo o max-width */
+      width: 96%;
+      max-width: none; 
+      margin: 10px auto; /* Diminuindo a margem para reduzir área em branco */
+      padding: 20px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #007BFF;
+      font-weight: 600;
+      margin-bottom: 30px;
+    }
+
+    /* ===========================
+       FORMULÁRIO
+       =========================== */
+    #formConsulta {
+      display: grid;
+      /* Aumentando o espaçamento horizontal se desejar
+         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); */
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    #formConsulta div {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #555;
+    }
+    input, select, textarea {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      padding: 10px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #007BFF;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    button {
+      background: #007BFF;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 12px;
+      border-radius: 6px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    /* ===========================
+       ÍCONES PARA AÇÕES
+       =========================== */
+    .btn-icon {
+      width: 24px;
+      height: 24px;
+      margin-right: 6px;
+      cursor: pointer;
+      vertical-align: middle;
+      transition: opacity 0.3s;
+    }
+    .btn-icon:hover {
+      opacity: 0.7;
+    }
+
+    /* ===========================
+       TABELA DE CONSULTAS
+       =========================== */
+    .tabela-container {
+      /* Não precisa de scroll horizontal em telas grandes */
+      overflow-x: visible; 
+    }
+    table {
+      /* Removendo table-layout: fixed para permitir colunas mais flexíveis */
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+      margin-top: 20px;
+    }
+    thead tr {
+      background-color: #007BFF;
+      color: #fff;
+      border-bottom: 2px solid #0056b3;
+    }
+    th, td {
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+      /* Permite o texto quebrar em múltiplas linhas */
+      white-space: normal; 
+      word-break: break-word;
+    }
+    tbody tr:hover {
+      background-color: #f2f2f2;
+    }
+
+    /* ===========================
+       MODAL DE NOTIFICAÇÃO
+       =========================== */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: 15% auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 400px;
+      text-align: center;
+      position: relative;
+    }
+    .close {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      color: #aaa;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover {
+      color: #000;
+    }
+
+    /* ===========================
+       RESPONSIVIDADE - TELAS PEQUENAS
+       =========================== */
+    @media (max-width: 768px) {
+      .container {
+        margin: 10px auto;
+        padding: 15px;
+      }
+      .tabela-container {
+        overflow-x: auto; /* Mantemos scroll horizontal se a tabela ficar muito grande no mobile */
+      }
+      thead {
+        display: none;
+      }
+      table, table tbody, table tr, table td {
+        display: block;
+        width: 100%;
+      }
+      table tbody tr {
+        margin-bottom: 15px;
+        background: #fff;
+        border-radius: 6px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        padding: 10px;
+      }
+      table td {
+        border: none;
+        text-align: left;
+        margin-bottom: 8px;
+        position: relative;
+        padding-left: 110px;
+      }
+      table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        font-weight: bold;
+        color: #555;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Controle de Consultas Médicas</h2>
+
+    <!-- Formulário de Cadastro/Edição -->
+    <form id="formConsulta">
+      <div>
+        <label for="categoria">Categoria:</label>
+        <select id="categoria" required>
+          <option value="" disabled selected>Selecione...</option>
+          <option value="Consulta">Consulta</option>
+          <option value="Exame">Exame</option>
+          <option value="Tratamento">Tratamento</option>
+          <option value="Vacinação">Vacinação</option>
+          <option value="Cirurgia">Cirurgia</option>
+          <option value="Terapia">Terapia</option>
+          <option value="Fisioterapia">Fisioterapia</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="especialidade">Especialidade:</label>
+        <input type="text" id="especialidade" required placeholder="Ex.: Cardiologia" />
+      </div>
+
+      <div>
+        <label for="medico">Médico:</label>
+        <input type="text" id="medico" required placeholder="Ex.: Dr. João Silva" />
+      </div>
+
+      <div>
+        <label for="local">Local do Atendimento:</label>
+        <input type="text" id="local" required placeholder="Ex.: Clínica XYZ" />
+      </div>
+
+      <div>
+        <label for="data">Data (DD/MM/AAAA):</label>
+        <input type="date" id="data" required />
+      </div>
+
+      <div>
+        <label for="hora">Horário:</label>
+        <input type="time" id="hora" required />
+      </div>
+
+      <!-- Campos Opcionais -->
+      <div class="full-width">
+        <label for="medicamentos">Medicamentos Prescritos (Opcional):</label>
+        <textarea id="medicamentos" placeholder="Ex.: Antibióticos, analgésicos, etc."></textarea>
+      </div>
+
+      <div class="full-width">
+        <label for="evolucao">Evolução do Tratamento (Opcional):</label>
+        <textarea id="evolucao" placeholder="Ex.: Paciente relata melhora significativa..."></textarea>
+      </div>
+
+      <button type="submit" class="full-width" id="btn-submit">Adicionar Consulta</button>
+    </form>
+
+    <!-- Tabela de Consultas -->
+    <div class="tabela-container">
+      <table id="tabelaConsultas">
+        <thead>
+          <tr>
+            <th>Categoria</th>
+            <th>Especialidade</th>
+            <th>Médico</th>
+            <th>Local</th>
+            <th>Data</th>
+            <th>Hora</th>
+            <th>Medicamentos</th>
+            <th>Evolução</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Linhas geradas dinamicamente -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal de Notificação -->
+  <div id="notificationModal" class="modal">
+    <div class="modal-content">
+      <span id="modalClose" class="close">&times;</span>
+      <h2 id="modalTitle"></h2>
+      <p id="modalMessage"></p>
+    </div>
+  </div>
+
+  <script>
+    /*************************************************
+     * VARIÁVEIS GLOBAIS
+     *************************************************/
+    let consultas = [];       
+    let editingId = null;     
+    const form = document.getElementById("formConsulta");
+    const tabelaConsultas = document.getElementById("tabelaConsultas").querySelector("tbody");
+    const btnSubmit = document.getElementById("btn-submit");
+
+    /*************************************************
+     * INICIALIZAÇÃO
+     *************************************************/
+    window.addEventListener("load", () => {
+      const consultasSalvas = localStorage.getItem("consultas");
+      if (consultasSalvas) {
+        consultas = JSON.parse(consultasSalvas);
+      }
+      renderizaTabela();
+      iniciarVerificacaoHorarios(); 
+    });
+
+    /*************************************************
+     * EVENTOS
+     *************************************************/
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      
+      const categoria = document.getElementById("categoria").value;
+      const especialidade = document.getElementById("especialidade").value;
+      const medico = document.getElementById("medico").value;
+      const localAtendimento = document.getElementById("local").value;
+      const dataIso = document.getElementById("data").value;  
+      const hora = document.getElementById("hora").value;
+      const medicamentos = document.getElementById("medicamentos").value.trim();
+      const evolucao = document.getElementById("evolucao").value.trim();
+
+      if (!dataIso) {
+        alert("Por favor, selecione uma data válida.");
+        return;
+      }
+
+      // Edição ou criação
+      if (editingId) {
+        const idx = consultas.findIndex((c) => c.id === editingId);
+        if (idx !== -1) {
+          consultas[idx] = {
+            ...consultas[idx],
+            categoria,
+            especialidade,
+            medico,
+            local: localAtendimento,
+            data: dataIso,
+            hora,
+            medicamentos,
+            evolucao
+          };
+          salvarNoStorage();
+          console.log(`Consulta atualizada: ${medico}`);
+        }
+        
+        editingId = null;
+        btnSubmit.textContent = "Adicionar Consulta";
+      } else {
+        const novaConsulta = {
+          id: Date.now(),
+          categoria,
+          especialidade,
+          medico,
+          local: localAtendimento,
+          data: dataIso,
+          hora,
+          medicamentos,
+          evolucao,
+          notificado: false 
+        };
+        consultas.push(novaConsulta);
+        salvarNoStorage();
+        console.log(`Nova consulta adicionada: ${categoria} com ${medico}`);
+      }
+
+      renderizaTabela();
+      form.reset();
+    });
+
+    /*************************************************
+     * FUNÇÕES
+     *************************************************/
+    function salvarNoStorage() {
+      localStorage.setItem("consultas", JSON.stringify(consultas));
+    }
+
+    function renderizaTabela() {
+      tabelaConsultas.innerHTML = "";
+
+      if (consultas.length === 0) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 9;
+        td.textContent = "Nenhuma consulta cadastrada.";
+        td.style.textAlign = "center";
+        tr.appendChild(td);
+        tabelaConsultas.appendChild(tr);
+        return;
+      }
+
+      consultas.forEach((c) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td data-label="Categoria">${c.categoria}</td>
+          <td data-label="Especialidade">${c.especialidade}</td>
+          <td data-label="Médico">${c.medico}</td>
+          <td data-label="Local">${c.local}</td>
+          <td data-label="Data">${formataDataBr(c.data)}</td>
+          <td data-label="Hora">${c.hora}</td>
+          <td data-label="Medicamentos">${c.medicamentos || ""}</td>
+          <td data-label="Evolução">${c.evolucao || ""}</td>
+          <td data-label="Ações"></td>
+        `;
+
+        // Ícone de Editar
+        const tdAcoes = tr.querySelector('td[data-label="Ações"]');
+        const btnEditar = document.createElement("img");
+        btnEditar.classList.add("btn-icon");
+        btnEditar.src = "https://cdn-icons-png.flaticon.com/512/1159/1159633.png";
+        btnEditar.alt = "Editar";
+        btnEditar.addEventListener("click", () => iniciarEdicao(c.id));
+
+        // Ícone de Remover
+        const btnRemover = document.createElement("img");
+        btnRemover.classList.add("btn-icon");
+        btnRemover.src = "https://cdn-icons-png.flaticon.com/512/1214/1214428.png";
+        btnRemover.alt = "Remover";
+        btnRemover.addEventListener("click", () => removerConsulta(c.id));
+
+        tdAcoes.appendChild(btnEditar);
+        tdAcoes.appendChild(btnRemover);
+
+        tabelaConsultas.appendChild(tr);
+      });
+    }
+
+    function removerConsulta(id) {
+      if (!confirm("Tem certeza que deseja remover esta consulta?")) return;
+      consultas = consultas.filter((c) => c.id !== id);
+      salvarNoStorage();
+      renderizaTabela();
+      console.log("Consulta removida com sucesso.");
+    }
+
+    function iniciarEdicao(id) {
+      editingId = id;
+      const consulta = consultas.find((c) => c.id === id);
+      if (!consulta) return;
+
+      document.getElementById("categoria").value = consulta.categoria;
+      document.getElementById("especialidade").value = consulta.especialidade;
+      document.getElementById("medico").value = consulta.medico;
+      document.getElementById("local").value = consulta.local;
+      document.getElementById("data").value = consulta.data;
+      document.getElementById("hora").value = consulta.hora;
+      document.getElementById("medicamentos").value = consulta.medicamentos || "";
+      document.getElementById("evolucao").value = consulta.evolucao || "";
+
+      btnSubmit.textContent = "Salvar Alterações";
+      form.scrollIntoView({ behavior: "smooth" });
+    }
+
+    function formataDataBr(isoDateString) {
+      if (!isoDateString) return "";
+      const [ano, mes, dia] = isoDateString.split("-");
+      return `${dia}/${mes}/${ano}`;
+    }
+
+    /*************************************************
+     * MODAL DE NOTIFICAÇÃO
+     *************************************************/
+    function showModalNotification(title, message) {
+      const modal = document.getElementById("notificationModal");
+      const modalTitle = document.getElementById("modalTitle");
+      const modalMessage = document.getElementById("modalMessage");
+
+      modalTitle.textContent = title;
+      modalMessage.textContent = message;
+      modal.style.display = "block";
+
+      // Fecha o modal automaticamente após 5 segundos
+      setTimeout(() => {
+        modal.style.display = "none";
+      }, 5000);
+    }
+
+    // Fechar o modal ao clicar no "X"
+    document.getElementById("modalClose").addEventListener("click", () => {
+      document.getElementById("notificationModal").style.display = "none";
+    });
+
+    /*************************************************
+     * VERIFICAÇÃO DE HORÁRIOS
+     *************************************************/
+    function iniciarVerificacaoHorarios() {
+      checarHorariosConsulta();
+      setInterval(checarHorariosConsulta, 60000);
+    }
+
+    function checarHorariosConsulta() {
+      const agora = new Date();
+      consultas.forEach((c) => {
+        if (!c.notificado) {
+          const [ano, mes, dia] = c.data.split("-");
+          const [hh, mm] = c.hora.split(":");
+          const dataConsulta = new Date(ano, mes - 1, dia, hh, mm);
+          if (agora >= dataConsulta) {
+            showModalNotification(
+              "Hora da Consulta", 
+              `A consulta de ${c.categoria} com ${c.medico} está marcada para agora.`
+            );
+            c.notificado = true;
+          }
+        }
+      });
+      salvarNoStorage();
+    }
+  </script>
+</body>
+</html>
