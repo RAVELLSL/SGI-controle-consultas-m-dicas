@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Controle de Consultas Médicas</title>
+  <title>Controle de Consultas Médicas Futurista</title>
+  
+  <!-- Google Fonts: Orbitron para títulos e Roboto para textos -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
   
   <style>
     /* ===========================
@@ -15,41 +20,63 @@
       box-sizing: border-box;
     }
     html, body {
-      font-family: Arial, sans-serif;
-      background: #f0f3f9;
-      color: #333;
-      line-height: 1.6;
-      /* Removendo margens padrão do body para aproveitar a tela */
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      color: #e0e0e0;
+      height: 100%;
+      overflow-x: hidden;
     }
-
+    
+    /* Fundo animado */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      background-size: 400% 400%;
+      animation: gradientAnimation 15s ease infinite;
+    }
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
     /* ===========================
-       CONTAINER PRINCIPAL
+       CONTAINER PRINCIPAL (Glassmorphism)
        =========================== */
     .container {
-      /* Aumentando a largura para quase a tela toda
-         e removendo o max-width */
       width: 96%;
-      max-width: none; 
-      margin: 10px auto; /* Diminuindo a margem para reduzir área em branco */
-      padding: 20px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+      margin: 20px auto;
+      padding: 30px;
+      background: rgba(20, 20, 30, 0.6);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
     }
+    
+    /* ===========================
+       TÍTULO
+       =========================== */
     h2 {
       text-align: center;
-      color: #007BFF;
-      font-weight: 600;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      color: #00f0ff;
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.8);
       margin-bottom: 30px;
     }
-
+    
     /* ===========================
-       FORMULÁRIO
+       FORMULÁRIO FUTURISTA
        =========================== */
     #formConsulta {
       display: grid;
-      /* Aumentando o espaçamento horizontal se desejar
-         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); */
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 20px;
       margin-bottom: 30px;
@@ -61,42 +88,49 @@
     label {
       font-weight: bold;
       margin-bottom: 5px;
-      color: #555;
+      color: #a0a0a0;
     }
     input, select, textarea {
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 8px;
       font-size: 14px;
       padding: 10px;
-      outline: none;
-      transition: border-color 0.3s;
+      background: rgba(255, 255, 255, 0.1);
+      color: #e0e0e0;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    input::placeholder, textarea::placeholder {
+      color: #ccc;
     }
     input:focus, select:focus, textarea:focus {
-      border-color: #007BFF;
+      border-color: #00f0ff;
+      box-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+      outline: none;
     }
     textarea {
       resize: vertical;
       min-height: 80px;
     }
     button {
-      background: #007BFF;
+      background: linear-gradient(45deg, #00f0ff, #007bff);
       color: #fff;
       border: none;
       cursor: pointer;
       font-size: 16px;
       padding: 12px;
-      border-radius: 6px;
-      transition: background 0.3s;
+      border-radius: 8px;
+      transition: transform 0.3s, box-shadow 0.3s;
     }
     button:hover {
-      background: #0056b3;
+      transform: translateY(-3px);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.7);
     }
     .full-width {
       grid-column: 1 / -1;
     }
-
+    
     /* ===========================
-       ÍCONES PARA AÇÕES
+       ÍCONES DE AÇÃO
        =========================== */
     .btn-icon {
       width: 24px;
@@ -104,45 +138,43 @@
       margin-right: 6px;
       cursor: pointer;
       vertical-align: middle;
-      transition: opacity 0.3s;
+      transition: opacity 0.3s, transform 0.3s;
     }
     .btn-icon:hover {
-      opacity: 0.7;
+      opacity: 0.8;
+      transform: scale(1.1);
     }
-
+    
     /* ===========================
-       TABELA DE CONSULTAS
+       TABELA DE CONSULTAS FUTURISTA
        =========================== */
     .tabela-container {
-      /* Não precisa de scroll horizontal em telas grandes */
-      overflow-x: visible; 
+      overflow-x: auto;
     }
     table {
-      /* Removendo table-layout: fixed para permitir colunas mais flexíveis */
       width: 100%;
       border-collapse: collapse;
       text-align: center;
       margin-top: 20px;
     }
     thead tr {
-      background-color: #007BFF;
+      background: linear-gradient(45deg, #007bff, #00f0ff);
       color: #fff;
-      border-bottom: 2px solid #0056b3;
+      border-bottom: 2px solid #00f0ff;
     }
     th, td {
       padding: 12px 15px;
-      border: 1px solid #ddd;
+      border: 1px solid rgba(255,255,255,0.2);
       font-size: 14px;
-      /* Permite o texto quebrar em múltiplas linhas */
-      white-space: normal; 
+      white-space: normal;
       word-break: break-word;
     }
     tbody tr:hover {
-      background-color: #f2f2f2;
+      background: rgba(0, 240, 255, 0.1);
     }
-
+    
     /* ===========================
-       MODAL DE NOTIFICAÇÃO
+       MODAL DE NOTIFICAÇÃO FUTURISTA
        =========================== */
     .modal {
       display: none;
@@ -153,17 +185,27 @@
       width: 100%;
       height: 100%;
       overflow: auto;
-      background-color: rgba(0,0,0,0.5);
+      background-color: rgba(0,0,0,0.7);
     }
     .modal-content {
-      background-color: #fff;
+      background: rgba(20, 20, 30, 0.9);
       margin: 15% auto;
       padding: 20px;
-      border-radius: 10px;
+      border-radius: 12px;
       width: 80%;
       max-width: 400px;
       text-align: center;
       position: relative;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+    }
+    .modal-content h2 {
+      font-family: 'Orbitron', sans-serif;
+      color: #00f0ff;
+      margin-bottom: 10px;
+    }
+    .modal-content p {
+      color: #e0e0e0;
     }
     .close {
       position: absolute;
@@ -173,21 +215,22 @@
       font-size: 28px;
       font-weight: bold;
       cursor: pointer;
+      transition: color 0.3s;
     }
     .close:hover {
-      color: #000;
+      color: #fff;
     }
-
+    
     /* ===========================
        RESPONSIVIDADE - TELAS PEQUENAS
        =========================== */
     @media (max-width: 768px) {
       .container {
         margin: 10px auto;
-        padding: 15px;
+        padding: 20px;
       }
       .tabela-container {
-        overflow-x: auto; /* Mantemos scroll horizontal se a tabela ficar muito grande no mobile */
+        overflow-x: auto;
       }
       thead {
         display: none;
@@ -198,9 +241,9 @@
       }
       table tbody tr {
         margin-bottom: 15px;
-        background: #fff;
-        border-radius: 6px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        background: rgba(20, 20, 30, 0.8);
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         padding: 10px;
       }
       table td {
@@ -215,7 +258,7 @@
         position: absolute;
         left: 10px;
         font-weight: bold;
-        color: #555;
+        color: #a0a0a0;
       }
     }
   </style>
