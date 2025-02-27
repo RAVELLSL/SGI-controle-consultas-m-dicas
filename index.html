@@ -1,181 +1,213 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Controle de Consultas Médicas Futurista</title>
-  
-  <!-- Google Fonts: Orbitron para títulos e Roboto para textos -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle de Consultas Médicas</title>
+  <!-- Pré-conexão para carregamento rápido das fontes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-  
+  <!-- Importando fontes: Orbitron para títulos e Poppins para textos -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
-    /* ===========================
-       RESET & BASE
-       =========================== */
+    /* ================================
+       VARIÁVEIS & RESET
+    ================================= */
+    :root {
+      --bg-main: #e0f7fa;
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      --accent-color: #7fdbff;
+      --secondary-accent: #ff80ab;
+      --text-color: #333333;
+      --input-border: #cccccc;
+      --input-focus: #7fdbff;
+      --btn-bg: #7fdbff;
+      --btn-hover: #6ac7e0;
+      --btn-danger: #ff6b6b;
+      --btn-danger-hover: #ff4c4c;
+      --table-head-bg: #7fdbff;
+      --table-head-text: #333333;
+    }
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    html, body {
-      font-family: 'Roboto', sans-serif;
-      background: linear-gradient(135deg, #1f1c2c, #928dab);
-      color: #e0e0e0;
-      height: 100%;
+    /* ================================
+       FUNDO MELHORADO
+       - Fundo com radial-gradient animado e overlay sutil
+    ================================= */
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-main);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
       overflow-x: hidden;
     }
-    
-    /* Fundo animado */
     body::before {
       content: "";
       position: fixed;
-      top: 0; left: 0;
+      top: -10%;
+      left: -10%;
+      width: 120%;
+      height: 120%;
+      background: radial-gradient(circle at center, #ffffff, var(--bg-main) 70%);
+      background-size: 150% 150%;
+      animation: pulseBg 25s ease-in-out infinite;
+      z-index: -2;
+    }
+    @keyframes pulseBg {
+      0%   { transform: scale(1); opacity: 1; }
+      50%  { transform: scale(1.05); opacity: 0.97; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
+      background-image:
+        radial-gradient(circle, rgba(127, 219, 255, 0.05) 1px, transparent 1px),
+        radial-gradient(circle, rgba(127, 219, 255, 0.05) 1px, transparent 1px);
+      background-position: 0 0, 25px 25px;
+      background-size: 50px 50px;
       z-index: -1;
-      background: linear-gradient(135deg, #1f1c2c, #928dab);
-      background-size: 400% 400%;
-      animation: gradientAnimation 15s ease infinite;
+      opacity: 0.5;
     }
-    @keyframes gradientAnimation {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    
-    /* ===========================
-       CONTAINER PRINCIPAL (Glassmorphism)
-       =========================== */
+    /* ================================
+       CONTAINER GLASSMORPHISM
+    ================================= */
     .container {
-      width: 96%;
-      margin: 20px auto;
-      padding: 30px;
-      background: rgba(20, 20, 30, 0.6);
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+      background: var(--glass-bg);
+      padding: 25px 30px;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      width: 90%;
+      max-width: 800px;
+      margin: 20px;
     }
-    
-    /* ===========================
-       TÍTULO
-       =========================== */
     h2 {
-      text-align: center;
       font-family: 'Orbitron', sans-serif;
-      font-size: 2rem;
-      color: #00f0ff;
-      text-shadow: 0 0 10px rgba(0, 240, 255, 0.8);
-      margin-bottom: 30px;
+      color: var(--accent-color);
+      text-shadow: 0 0 8px var(--accent-color);
+      text-align: center;
+      margin-bottom: 20px;
     }
-    
-    /* ===========================
-       FORMULÁRIO FUTURISTA
-       =========================== */
-    #formConsulta {
+    /* ================================
+       FORMULÁRIO DE CONSULTAS
+    ================================= */
+    form#formConsulta {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
+      gap: 15px;
+      margin-bottom: 25px;
     }
-    #formConsulta div {
+    form#formConsulta div {
       display: flex;
       flex-direction: column;
     }
-    label {
+    form#formConsulta label {
       font-weight: bold;
       margin-bottom: 5px;
-      color: #a0a0a0;
+      color: var(--text-color);
     }
-    input, select, textarea {
-      border: 1px solid rgba(255,255,255,0.3);
-      border-radius: 8px;
-      font-size: 14px;
+    form#formConsulta input,
+    form#formConsulta select,
+    form#formConsulta textarea {
+      width: 100%;
       padding: 10px;
-      background: rgba(255, 255, 255, 0.1);
-      color: #e0e0e0;
-      transition: border-color 0.3s, box-shadow 0.3s;
+      border: 1px solid var(--input-border);
+      border-radius: 5px;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--text-color);
+      transition: border-color 0.3s;
     }
-    input::placeholder, textarea::placeholder {
-      color: #ccc;
-    }
-    input:focus, select:focus, textarea:focus {
-      border-color: #00f0ff;
-      box-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+    form#formConsulta input:focus,
+    form#formConsulta select:focus,
+    form#formConsulta textarea:focus {
+      border-color: var(--input-focus);
       outline: none;
     }
-    textarea {
+    form#formConsulta textarea {
       resize: vertical;
       min-height: 80px;
     }
     button {
-      background: linear-gradient(45deg, #00f0ff, #007bff);
-      color: #fff;
+      background: var(--btn-bg);
+      color: var(--bg-main);
       border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
       cursor: pointer;
       font-size: 16px;
-      padding: 12px;
-      border-radius: 8px;
-      transition: transform 0.3s, box-shadow 0.3s;
+      transition: background 0.3s, transform 0.2s;
+      width: 100%;
     }
     button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 0 12px rgba(0, 240, 255, 0.7);
+      background: var(--btn-hover);
+      transform: translateY(-2px);
     }
     .full-width {
       grid-column: 1 / -1;
     }
-    
-    /* ===========================
+    /* ================================
+       TABELA DE CONSULTAS
+    ================================= */
+    .tabela-container {
+      overflow-x: auto;
+      margin-top: 15px;
+      border-radius: 8px;
+      border: 1px solid rgba(204,204,204,0.5);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      background: var(--glass-bg);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    table thead {
+      background-color: var(--table-head-bg);
+    }
+    table th, table td {
+      padding: 12px 15px;
+      border: 1px solid rgba(204,204,204,0.5);
+      font-size: 14px;
+      text-align: center;
+      color: var(--text-color);
+    }
+    table th {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--table-head-text);
+    }
+    /* ================================
        ÍCONES DE AÇÃO
-       =========================== */
+    ================================= */
     .btn-icon {
       width: 24px;
       height: 24px;
       margin-right: 6px;
       cursor: pointer;
       vertical-align: middle;
-      transition: opacity 0.3s, transform 0.3s;
+      transition: opacity 0.3s;
     }
     .btn-icon:hover {
-      opacity: 0.8;
-      transform: scale(1.1);
+      opacity: 0.7;
     }
-    
-    /* ===========================
-       TABELA DE CONSULTAS FUTURISTA
-       =========================== */
-    .tabela-container {
-      overflow-x: auto;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: center;
-      margin-top: 20px;
-    }
-    thead tr {
-      background: linear-gradient(45deg, #007bff, #00f0ff);
-      color: #fff;
-      border-bottom: 2px solid #00f0ff;
-    }
-    th, td {
-      padding: 12px 15px;
-      border: 1px solid rgba(255,255,255,0.2);
-      font-size: 14px;
-      white-space: normal;
-      word-break: break-word;
-    }
-    tbody tr:hover {
-      background: rgba(0, 240, 255, 0.1);
-    }
-    
-    /* ===========================
-       MODAL DE NOTIFICAÇÃO FUTURISTA
-       =========================== */
+    /* ================================
+       MODAL DE NOTIFICAÇÃO
+    ================================= */
     .modal {
       display: none;
       position: fixed;
@@ -185,89 +217,59 @@
       width: 100%;
       height: 100%;
       overflow: auto;
-      background-color: rgba(0,0,0,0.7);
+      background-color: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
     }
     .modal-content {
-      background: rgba(20, 20, 30, 0.9);
-      margin: 15% auto;
+      background: var(--glass-bg);
       padding: 20px;
-      border-radius: 12px;
-      width: 80%;
+      border-radius: 10px;
+      width: 90%;
       max-width: 400px;
       text-align: center;
       position: relative;
-      box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
-      border: 1px solid rgba(0, 240, 255, 0.3);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      animation: fadeIn 0.3s;
     }
     .modal-content h2 {
       font-family: 'Orbitron', sans-serif;
-      color: #00f0ff;
-      margin-bottom: 10px;
+      color: var(--accent-color);
+      text-shadow: 0 0 8px var(--accent-color);
+      margin-bottom: 15px;
     }
     .modal-content p {
-      color: #e0e0e0;
+      color: var(--text-color);
     }
     .close {
       position: absolute;
       right: 15px;
       top: 10px;
-      color: #aaa;
       font-size: 28px;
       font-weight: bold;
+      color: #aaa;
       cursor: pointer;
-      transition: color 0.3s;
+      transition: color 0.2s;
     }
     .close:hover {
-      color: #fff;
+      color: #666;
     }
-    
-    /* ===========================
-       RESPONSIVIDADE - TELAS PEQUENAS
-       =========================== */
     @media (max-width: 768px) {
-      .container {
-        margin: 10px auto;
-        padding: 20px;
+      form#formConsulta {
+        grid-template-columns: 1fr;
       }
-      .tabela-container {
-        overflow-x: auto;
-      }
-      thead {
-        display: none;
-      }
-      table, table tbody, table tr, table td {
-        display: block;
-        width: 100%;
-      }
-      table tbody tr {
-        margin-bottom: 15px;
-        background: rgba(20, 20, 30, 0.8);
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        padding: 10px;
-      }
-      table td {
-        border: none;
-        text-align: left;
-        margin-bottom: 8px;
-        position: relative;
-        padding-left: 110px;
-      }
-      table td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 10px;
-        font-weight: bold;
-        color: #a0a0a0;
-      }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; margin-top: -20px; }
+      to { opacity: 1; margin-top: 0; }
     }
   </style>
 </head>
 <body>
-
   <div class="container">
     <h2>Controle de Consultas Médicas</h2>
-
     <!-- Formulário de Cadastro/Edição -->
     <form id="formConsulta">
       <div>
@@ -283,46 +285,37 @@
           <option value="Fisioterapia">Fisioterapia</option>
         </select>
       </div>
-
       <div>
         <label for="especialidade">Especialidade:</label>
         <input type="text" id="especialidade" required placeholder="Ex.: Cardiologia" />
       </div>
-
       <div>
         <label for="medico">Médico:</label>
         <input type="text" id="medico" required placeholder="Ex.: Dr. João Silva" />
       </div>
-
       <div>
         <label for="local">Local do Atendimento:</label>
         <input type="text" id="local" required placeholder="Ex.: Clínica XYZ" />
       </div>
-
       <div>
         <label for="data">Data (DD/MM/AAAA):</label>
         <input type="date" id="data" required />
       </div>
-
       <div>
         <label for="hora">Horário:</label>
         <input type="time" id="hora" required />
       </div>
-
       <!-- Campos Opcionais -->
       <div class="full-width">
         <label for="medicamentos">Medicamentos Prescritos (Opcional):</label>
         <textarea id="medicamentos" placeholder="Ex.: Antibióticos, analgésicos, etc."></textarea>
       </div>
-
       <div class="full-width">
         <label for="evolucao">Evolução do Tratamento (Opcional):</label>
         <textarea id="evolucao" placeholder="Ex.: Paciente relata melhora significativa..."></textarea>
       </div>
-
       <button type="submit" class="full-width" id="btn-submit">Adicionar Consulta</button>
     </form>
-
     <!-- Tabela de Consultas -->
     <div class="tabela-container">
       <table id="tabelaConsultas">
@@ -345,7 +338,6 @@
       </table>
     </div>
   </div>
-
   <!-- Modal de Notificação -->
   <div id="notificationModal" class="modal">
     <div class="modal-content">
@@ -354,16 +346,27 @@
       <p id="modalMessage"></p>
     </div>
   </div>
-
   <script>
     /*************************************************
      * VARIÁVEIS GLOBAIS
      *************************************************/
-    let consultas = [];       
-    let editingId = null;     
+    let consultas = [];
+    let editingId = null;
     const form = document.getElementById("formConsulta");
     const tabelaConsultas = document.getElementById("tabelaConsultas").querySelector("tbody");
     const btnSubmit = document.getElementById("btn-submit");
+
+    // Lista de cores para as linhas da tabela
+    const coresLinhas = [
+      "#e3f2fd", // Azul claro
+      "#f3e5f5", // Roxo claro
+      "#fff3e0", // Laranja claro
+      "#e8f5e9", // Verde claro
+      "#fbe9e7", // Vermelho claro
+      "#f0f4c3", // Amarelo claro
+      "#e0f7fa", // Ciano claro
+      "#fce4ec", // Rosa claro
+    ];
 
     /*************************************************
      * INICIALIZAÇÃO
@@ -374,7 +377,7 @@
         consultas = JSON.parse(consultasSalvas);
       }
       renderizaTabela();
-      iniciarVerificacaoHorarios(); 
+      iniciarVerificacaoHorarios();
     });
 
     /*************************************************
@@ -382,18 +385,20 @@
      *************************************************/
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      
+
       const categoria = document.getElementById("categoria").value;
-      const especialidade = document.getElementById("especialidade").value;
-      const medico = document.getElementById("medico").value;
-      const localAtendimento = document.getElementById("local").value;
-      const dataIso = document.getElementById("data").value;  
+      const especialidade = document.getElementById("especialidade").value.trim();
+      const medico = document.getElementById("medico").value.trim();
+      const localAtendimento = document.getElementById("local").value.trim();
+      const dataIso = document.getElementById("data").value;
       const hora = document.getElementById("hora").value;
       const medicamentos = document.getElementById("medicamentos").value.trim();
       const evolucao = document.getElementById("evolucao").value.trim();
 
-      if (!dataIso) {
-        alert("Por favor, selecione uma data válida.");
+      // Validação de data e hora futuras
+      const dataConsulta = new Date(`${dataIso}T${hora}`);
+      if (dataConsulta <= new Date()) {
+        alert("A data e hora da consulta devem ser futuras.");
         return;
       }
 
@@ -410,12 +415,11 @@
             data: dataIso,
             hora,
             medicamentos,
-            evolucao
+            evolucao,
           };
           salvarNoStorage();
-          console.log(`Consulta atualizada: ${medico}`);
+          showModalNotification("Sucesso", "Consulta atualizada com sucesso.");
         }
-        
         editingId = null;
         btnSubmit.textContent = "Adicionar Consulta";
       } else {
@@ -429,11 +433,11 @@
           hora,
           medicamentos,
           evolucao,
-          notificado: false 
+          notificado: false,
         };
         consultas.push(novaConsulta);
         salvarNoStorage();
-        console.log(`Nova consulta adicionada: ${categoria} com ${medico}`);
+        showModalNotification("Sucesso", "Consulta adicionada com sucesso.");
       }
 
       renderizaTabela();
@@ -461,17 +465,21 @@
         return;
       }
 
-      consultas.forEach((c) => {
+      consultas.forEach((consulta, index) => {
         const tr = document.createElement("tr");
+        // Atribui uma cor da lista de cores de forma cíclica
+        const cor = coresLinhas[index % coresLinhas.length];
+        tr.style.backgroundColor = cor;
+
         tr.innerHTML = `
-          <td data-label="Categoria">${c.categoria}</td>
-          <td data-label="Especialidade">${c.especialidade}</td>
-          <td data-label="Médico">${c.medico}</td>
-          <td data-label="Local">${c.local}</td>
-          <td data-label="Data">${formataDataBr(c.data)}</td>
-          <td data-label="Hora">${c.hora}</td>
-          <td data-label="Medicamentos">${c.medicamentos || ""}</td>
-          <td data-label="Evolução">${c.evolucao || ""}</td>
+          <td data-label="Categoria">${consulta.categoria}</td>
+          <td data-label="Especialidade">${consulta.especialidade}</td>
+          <td data-label="Médico">${consulta.medico}</td>
+          <td data-label="Local">${consulta.local}</td>
+          <td data-label="Data">${formataDataBr(consulta.data)}</td>
+          <td data-label="Hora">${consulta.hora}</td>
+          <td data-label="Medicamentos">${consulta.medicamentos || ""}</td>
+          <td data-label="Evolução">${consulta.evolucao || ""}</td>
           <td data-label="Ações"></td>
         `;
 
@@ -481,14 +489,16 @@
         btnEditar.classList.add("btn-icon");
         btnEditar.src = "https://cdn-icons-png.flaticon.com/512/1159/1159633.png";
         btnEditar.alt = "Editar";
-        btnEditar.addEventListener("click", () => iniciarEdicao(c.id));
+        btnEditar.setAttribute("aria-label", "Editar Consulta");
+        btnEditar.addEventListener("click", () => iniciarEdicao(consulta.id));
 
         // Ícone de Remover
         const btnRemover = document.createElement("img");
         btnRemover.classList.add("btn-icon");
         btnRemover.src = "https://cdn-icons-png.flaticon.com/512/1214/1214428.png";
         btnRemover.alt = "Remover";
-        btnRemover.addEventListener("click", () => removerConsulta(c.id));
+        btnRemover.setAttribute("aria-label", "Remover Consulta");
+        btnRemover.addEventListener("click", () => removerConsulta(consulta.id));
 
         tdAcoes.appendChild(btnEditar);
         tdAcoes.appendChild(btnRemover);
@@ -502,7 +512,7 @@
       consultas = consultas.filter((c) => c.id !== id);
       salvarNoStorage();
       renderizaTabela();
-      console.log("Consulta removida com sucesso.");
+      showModalNotification("Sucesso", "Consulta removida com sucesso.");
     }
 
     function iniciarEdicao(id) {
@@ -539,7 +549,7 @@
 
       modalTitle.textContent = title;
       modalMessage.textContent = message;
-      modal.style.display = "block";
+      modal.style.display = "flex";
 
       // Fecha o modal automaticamente após 5 segundos
       setTimeout(() => {
@@ -569,7 +579,7 @@
           const dataConsulta = new Date(ano, mes - 1, dia, hh, mm);
           if (agora >= dataConsulta) {
             showModalNotification(
-              "Hora da Consulta", 
+              "Hora da Consulta",
               `A consulta de ${c.categoria} com ${c.medico} está marcada para agora.`
             );
             c.notificado = true;
@@ -579,5 +589,13 @@
       salvarNoStorage();
     }
   </script>
+  <!-- Modal de Notificação -->
+  <div id="notificationModal" class="modal">
+    <div class="modal-content">
+      <span id="modalClose" class="close">&times;</span>
+      <h2 id="modalTitle"></h2>
+      <p id="modalMessage"></p>
+    </div>
+  </div>
 </body>
 </html>
